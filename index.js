@@ -57,7 +57,7 @@ module.exports = function(options) {
     };
 
     // set "Host" header to options.host (without protocol prefix), strip trailing slash
-    if (options.host)
+    if (options.host && options.retainOriginalHost !== true)
       opt.headers.host = options.host
         .slice(options.host.indexOf('://') + 3)
         .replace(/\/$/, '');

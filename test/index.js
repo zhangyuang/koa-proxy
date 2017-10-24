@@ -60,6 +60,12 @@ describe('koa-proxy', function() {
         ctx.status = 200;
         return;
       }
+      if (ctx.path === '/retain-original-host') {
+        var headers = ctx.request.header;
+        ctx.body = headers;
+        ctx.status = 200;
+        return;
+      }
       if (ctx.querystring) {
         // To test query string
         ctx.body = ctx.querystring;
@@ -145,6 +151,24 @@ describe('koa-proxy', function() {
       .end(function(err, res) {
         if (err) return done(err);
         res.text.should.startWith('define("arale/class/1.0.0/class"');
+        done();
+      });
+  });
+
+  it('should have option retainOriginalHost', function(done) {
+    var app = new Koa();
+    app.use(proxy({
+        host: 'http://localhost:1234',
+        retainOriginalHost: true
+      }));
+    var server = http.createServer(app.callback());
+    request(server)
+      .get('/retain-original-host')
+      .set('Host', 'localhost') // manually set host, since supertest randomizes the port
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+        res.body.host.should.equal('localhost');
         done();
       });
   });
