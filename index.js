@@ -56,6 +56,10 @@ module.exports = function(options) {
       resolveWithFullResponse: true // make request-promise respond with the complete response object
     };
 
+    if (options.host && options.addForwardedHost) {
+      opt.headers["X-Forwarded-Host"] = opt.headers.host;
+    }
+
     // set "Host" header to options.host (without protocol prefix), strip trailing slash
     if (options.host && options.retainOriginalHost !== true)
       opt.headers.host = options.host
